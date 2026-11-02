@@ -1,0 +1,515 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bob's Bar · The Crying Jukebox</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Permanent+Marker&family=Special+Elite&display=swap" rel="stylesheet">
+<style>
+:root{
+  --wall:#efe6d2;      /* old bungalow plaster */
+  --wall-d:#e2d6bb;
+  --ink:#1b1713;
+  --tile:#141210;
+  --tile-l:#f4efe3;
+  --wicker:#b98a4e;
+  --wicker-d:#8a6130;
+  --red:#c2362b;
+  --teal:#1f7a74;
+  --mustard:#d9a21b;
+  --paper:#fbf7ec;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--wall);color:var(--ink);
+  font-family:'Special Elite','Courier New',monospace;line-height:1.5;
+}
+/* plaster texture */
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(ellipse at 50% 0%,rgba(255,255,255,.55),transparent 60%),
+    radial-gradient(ellipse at 50% 120%,rgba(60,40,10,.18),transparent 55%);
+}
+main{position:relative;z-index:1}
+.wrap{max-width:880px;margin:0 auto;padding:0 16px}
+
+/* ---------- sign ---------- */
+.hero{position:relative;text-align:center;padding:56px 0 40px;overflow:hidden}
+.sign{
+  display:inline-block;background:var(--tile);color:var(--tile-l);
+  padding:14px 34px 10px;border:6px solid var(--tile-l);outline:4px solid var(--tile);
+  font-family:'Alfa Slab One',serif;font-size:clamp(40px,10vw,84px);letter-spacing:.02em;
+  transform:rotate(-1.5deg);box-shadow:8px 10px 0 rgba(0,0,0,.18);
+}
+.sign small{display:block;font-family:'Special Elite',monospace;font-size:clamp(12px,2.4vw,16px);letter-spacing:.35em;text-transform:uppercase;color:var(--mustard);margin-top:2px}
+.tag{font-size:clamp(18px,3.4vw,26px);margin:30px auto 8px;max-width:560px}
+.tag b{background:linear-gradient(transparent 55%,rgba(217,162,27,.55) 55%)}
+.sub{opacity:.7;max-width:480px;margin:0 auto 26px}
+
+/* graffiti scribbles */
+.g{position:absolute;font-family:'Permanent Marker',cursive;opacity:.9;user-select:none;pointer-events:none;white-space:nowrap}
+.g1{top:22px;left:4%;color:var(--red);transform:rotate(-8deg);font-size:26px}
+.g2{top:70px;right:5%;color:var(--teal);transform:rotate(6deg);font-size:30px}
+.g3{bottom:78px;left:3%;color:var(--mustard);transform:rotate(5deg);font-size:24px}
+.g4{bottom:40px;right:4%;color:var(--red);transform:rotate(-5deg);font-size:22px}
+.g5{top:150px;left:10%;color:var(--teal);transform:rotate(-3deg);font-size:20px;opacity:.7}
+@media(max-width:720px){.g3,.g4,.g5{display:none}.g1{font-size:18px}.g2{font-size:20px}}
+
+.btn{
+  font-family:'Alfa Slab One',serif;font-size:20px;letter-spacing:.03em;
+  background:var(--red);color:#fff;border:3px solid var(--ink);border-radius:4px;
+  padding:12px 26px;cursor:pointer;box-shadow:5px 5px 0 var(--ink);transition:transform .08s,box-shadow .08s;
+}
+.btn:hover{transform:translate(-1px,-1px);box-shadow:7px 7px 0 var(--ink)}
+.btn:active{transform:translate(4px,4px);box-shadow:1px 1px 0 var(--ink)}
+
+/* ---------- order section (wicker chair vibe) ---------- */
+.card{
+  position:relative;margin:34px 0;padding:28px 24px 30px;background:var(--paper);
+  border:4px solid var(--wicker-d);border-radius:10px 10px 4px 4px;
+  background-image:repeating-linear-gradient(45deg,rgba(138,97,48,.06) 0 6px,transparent 6px 12px);
+  box-shadow:0 0 0 6px var(--wicker),0 0 0 9px var(--wicker-d),10px 14px 0 rgba(0,0,0,.14);
+}
+.card h2{font-family:'Alfa Slab One',serif;font-weight:400;font-size:28px;margin:0 0 4px}
+.card p.hint{margin:0 0 18px;opacity:.7}
+.chips{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:28px}
+.chip{
+  font-family:inherit;font-size:16px;padding:8px 16px;border:2px solid var(--ink);border-radius:999px;
+  background:transparent;cursor:pointer;transition:.1s;
+}
+.chip:hover{background:var(--wall-d)}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--tile-l)}
+.chip.soon{opacity:.45;border-style:dashed}
+.chip.soon::after{content:" · soon";font-size:12px}
+
+.dialrow{display:flex;align-items:center;gap:26px;flex-wrap:wrap}
+.glass{width:90px;flex:none}
+.glass .liq{transition:y .25s,height .25s}
+input[type=range]{flex:1;min-width:200px;accent-color:var(--red);height:30px}
+.dialtxt{min-width:220px}
+.dialtxt .n{font-family:'Alfa Slab One',serif;font-size:36px;line-height:1}
+.dialtxt .q{display:block;min-height:3em;opacity:.8;margin-top:4px}
+.go{margin-top:26px;text-align:center}
+
+/* ---------- tab / playlist ---------- */
+#tab{display:none}
+#tab.show{display:block;animation:slide .5s ease}
+@keyframes slide{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+.receipt{
+  background:var(--paper);border:2px dashed var(--ink);padding:26px 22px;margin:36px 0;
+  box-shadow:10px 12px 0 rgba(0,0,0,.14);position:relative;
+}
+.receipt::before,.receipt::after{
+  content:"";position:absolute;left:-2px;right:-2px;height:10px;
+  background:radial-gradient(circle at 8px 0,transparent 6px,var(--paper) 7px) 0 0/16px 10px repeat-x;
+}
+.receipt::before{top:-10px;transform:scaleY(-1)}
+.receipt::after{bottom:-10px}
+.rh{display:flex;align-items:center;gap:18px;border-bottom:2px dashed var(--ink);padding-bottom:16px;margin-bottom:6px}
+.vinyl{
+  width:74px;height:74px;border-radius:50%;flex:none;
+  background:radial-gradient(circle,var(--red) 0 16%,#111 17% 24%,#222 25% 28%,#111 29% 46%,#222 47% 49%,#111 50%);
+  box-shadow:0 0 0 3px var(--ink);animation:spin 3.2s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.rh h3{margin:0;font-family:'Alfa Slab One',serif;font-weight:400;font-size:26px}
+.rh p{margin:2px 0 0;opacity:.7}
+.act{margin:22px 0 0}
+.act h4{
+  margin:0 0 6px;font-family:'Permanent Marker',cursive;font-weight:400;font-size:24px;
+  color:var(--c,var(--red));display:flex;justify-content:space-between;align-items:baseline;gap:10px;
+}
+.act h4 span{font-family:'Special Elite',monospace;font-size:13px;color:var(--ink);opacity:.6}
+.trk{display:flex;gap:10px;padding:5px 0;border-bottom:1px dotted rgba(0,0,0,.35)}
+.trk .no{opacity:.45;width:22px;flex:none}
+.trk .t{flex:1}
+.trk .a{opacity:.65}
+.meter{margin:20px 0 4px}
+.bar{height:18px;border:2px solid var(--ink);border-radius:999px;overflow:hidden;background:#fff}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--teal),var(--mustard),var(--red));transition:width .9s ease}
+.meter .l{display:flex;justify-content:space-between;font-size:13px;opacity:.7;margin-top:4px}
+.total{border-top:2px dashed var(--ink);margin-top:22px;padding-top:12px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.note{margin:6px 0 0;font-size:13px;opacity:.6}
+
+.btn.sec{background:transparent;color:var(--ink);margin-right:10px}
+.go .btn{margin-bottom:8px}
+/* ---------- now playing ---------- */
+.vinyl.off{animation-play-state:paused}
+.np{margin:18px 0 6px;padding:16px;border:3px solid var(--ink);background:var(--tile);color:var(--tile-l);border-radius:6px;box-shadow:5px 5px 0 rgba(0,0,0,.25)}
+.np .k{font-size:12px;letter-spacing:.3em;text-transform:uppercase;color:var(--mustard)}
+.np .tt{font-family:'Alfa Slab One',serif;font-size:clamp(22px,5vw,32px);margin:4px 0 0;line-height:1.15}
+.np .aa{opacity:.75;margin:2px 0 0}
+.np .ss{font-size:13px;opacity:.6;margin:6px 0 12px}
+.np .btns{display:flex;flex-wrap:wrap;gap:10px}
+.np .btn{font-size:16px;padding:10px 18px;box-shadow:4px 4px 0 rgba(255,255,255,.25);border-color:var(--tile-l)}
+.np .btn.alt{background:transparent;color:var(--tile-l)}
+.np .btn.big{background:var(--red)}
+.np.end{text-align:center}
+.np.end .tt{margin:8px 0}
+.trk.now{background:rgba(217,162,27,.28);margin:0 -8px;padding:5px 8px}
+.trk.now .t{font-weight:bold}
+
+/* ---------- floor ---------- */
+.floor{
+  height:120px;margin-top:40px;
+  background:
+    conic-gradient(var(--tile) 25%,var(--tile-l) 0 50%,var(--tile) 0 75%,var(--tile-l) 0) 0 0/60px 60px;
+  transform-origin:top;box-shadow:inset 0 30px 40px -10px rgba(0,0,0,.45);
+}
+footer{background:var(--tile);color:var(--tile-l);text-align:center;padding:18px 16px 26px;font-size:13px}
+footer span{color:var(--mustard)}
+</style>
+</head>
+<body>
+<main>
+  <header class="hero">
+    <div class="g g1">Koshy's was here</div>
+    <div class="g g2">MTR ♥</div>
+    <div class="g g3">Plaza Theatre</div>
+    <div class="g g4">Styx</div>
+    <div class="g g5">namma bengaluru</div>
+
+    <div class="sign">BOB'S BAR<small>· the crying edition ·</small></div>
+    <button class="btn" onclick="document.getElementById('order').scrollIntoView()">Pull up a stool</button>
+  </header>
+
+  <div class="wrap">
+    <section class="card" id="order">
+      <h2>What's got you here tonight?</h2>
+      <p class="hint">No wrong answers. The bartender has seen worse.</p>
+      <div class="chips" id="chips"></div>
+
+      <h2>How full's the glass?</h2>
+      <p class="hint">How bad is it, really?</p>
+      <div class="dialrow">
+        <svg class="glass" viewBox="0 0 90 120" aria-hidden="true">
+          <defs><clipPath id="gc"><path d="M12 8h66l-9 100a8 8 0 0 1-8 7H29a8 8 0 0 1-8-7z"/></clipPath></defs>
+          <g clip-path="url(#gc)"><rect class="liq" id="liq" x="0" y="60" width="90" height="120" fill="#c98a1e" opacity=".9"/></g>
+          <path d="M12 8h66l-9 100a8 8 0 0 1-8 7H29a8 8 0 0 1-8-7z" fill="none" stroke="#1b1713" stroke-width="4"/>
+        </svg>
+        <input type="range" id="dial" min="1" max="10" value="5" aria-label="How bad is it, 1 to 10">
+        <div class="dialtxt"><div class="n"><span id="dn">5</span>/10</div><span class="q" id="dq"></span></div>
+      </div>
+      <div class="go">
+        <button class="btn sec" id="sp">Connect Spotify</button>
+        <button class="btn" id="go">Start my tab</button>
+        <p class="note" id="spS">Not connected: you'll hear 30-second previews. Connect Spotify Premium for full songs.</p>
+      </div>
+    </section>
+
+    <section id="tab" aria-live="polite">
+      <div class="receipt">
+        <div class="rh">
+          <div class="vinyl"></div>
+          <div><h3 id="rt">Your tab</h3><p id="rs"></p></div>
+        </div>
+        <div class="np" id="np">
+          <div class="k">now playing</div>
+          <div class="tt" id="npT">…</div>
+          <div class="aa" id="npA"></div>
+          <div class="ss" id="npS"></div>
+          <div class="btns">
+            <button class="btn big" id="bCry">They're crying</button>
+            <button class="btn alt" id="bNext">Not yet, next</button>
+            <button class="btn alt" id="bPause">Pause</button>
+          </div>
+        </div>
+        <div class="np end" id="npEnd" style="display:none">
+          <div class="k" id="endK"></div>
+          <div class="tt" id="endT"></div>
+          <div class="aa" id="endA"></div>
+          <div class="btns" style="justify-content:center;margin-top:14px"><button class="btn big" id="bAgain">Start another tab</button></div>
+        </div>
+        <div id="acts"></div>
+        <div class="meter">
+          <div class="bar"><i id="bar"></i></div>
+          <div class="l"><span>dry-eyed</span><span>tear level</span><span>full flood</span></div>
+        </div>
+        <div class="total"><span id="tot"></span><span id="tip"></span></div>
+        <p class="note">Classic Bollywood, curated by hand. Plays 30-second previews from Apple Music.</p>
+      </div>
+    </section>
+  </div>
+
+  <div class="floor"></div>
+</main>
+<footer>Bob's Bar · <span>cry responsibly</span> · a vibe-coded tribute, not affiliated with the bar</footer>
+
+<script>
+const MOODS={
+  heart:{label:"Heartbreak",title:"Tab: one broken heart",acts:[
+    {n:"Order up",sub:"lump in the throat",c:"var(--teal)",t:[
+      ["Lag Ja Gale","Lata Mangeshkar · Woh Kaun Thi? (1964)"],
+      ["Abhi Na Jao Chhod Kar","Mohd. Rafi, Asha Bhosle · Hum Dono (1961)"],
+      ["Kabhi Kabhie Mere Dil Mein","Mukesh · Kabhi Kabhie (1976)"],
+      ["Tere Bina Zindagi Se","Kishore Kumar, Lata Mangeshkar · Aandhi (1975)"]]},
+    {n:"Second round",sub:"the crack",c:"var(--mustard)",t:[
+      ["Mere Naina Sawan Bhadon","Kishore Kumar · Mehbooba (1976)"],
+      ["Zindagi Ke Safar Mein","Kishore Kumar · Aap Ki Kasam (1974)"],
+      ["Tujhse Naraaz Nahin Zindagi","Lata Mangeshkar · Masoom (1983)"],
+      ["Ek Pyar Ka Nagma Hai","Lata Mangeshkar, Mukesh · Shor (1972)"]]},
+    {n:"Last call",sub:"full ugly cry",c:"var(--red)",t:[
+      ["Waqt Ne Kiya Kya Haseen Sitam","Geeta Dutt · Kaagaz Ke Phool (1959)"],
+      ["Jaane Woh Kaise Log The","Hemant Kumar · Pyaasa (1957)"],
+      ["Chingari Koi Bhadke","Kishore Kumar · Amar Prem (1972)"],
+      ["Kahin Door Jab Din Dhal Jaye","Mukesh · Anand (1971)"],
+      ["Dil Hoom Hoom Kare","Lata Mangeshkar, Bhupen Hazarika · Rudaali (1993)"]]},
+    {n:"Walk home",sub:"soft landing",c:"var(--teal)",t:[
+      ["Aane Wala Pal","Kishore Kumar · Golmaal (1979)"],
+      ["Zindagi Ek Safar Hai Suhana","Kishore Kumar · Andaz (1971)"],
+      ["Ruk Jaana Nahin","Kishore Kumar · Imtihaan (1974)"]]}]},
+  home:{label:"Homesick",title:"Tab: one far-from-home",acts:[
+    {n:"Order up",sub:"lump in the throat",c:"var(--teal)",t:[
+      ["Pardesiyon Se Na Akhiyan Milana","Lata Mangeshkar, Mohd. Rafi · Jab Jab Phool Khile (1965)"],
+      ["Chalte Chalte Mere Yeh Geet","Kishore Kumar · Chalte Chalte (1976)"],
+      ["Musafir Hoon Yaaron","Kishore Kumar · Parichay (1972)"]]},
+    {n:"Second round",sub:"the crack",c:"var(--mustard)",t:[
+      ["Dil Dhoondta Hai","Bhupinder Singh, Lata Mangeshkar · Mausam (1975)"],
+      ["Tu Kitni Achchi Hai","Lata Mangeshkar · Raja Aur Runk (1968)"],
+      ["Ae Mere Pyare Watan","Manna Dey · Kabuliwala (1961)"]]},
+    {n:"Last call",sub:"full ugly cry",c:"var(--red)",t:[
+      ["Aaja Re Pardesi","Lata Mangeshkar · Madhumati (1958)"],
+      ["Chitthi Aayi Hai","Pankaj Udhas · Naam (1986)"],
+      ["Babul Ki Duayen Leti Ja","Mohd. Rafi · Neel Kamal (1968)"]]},
+    {n:"Walk home",sub:"soft landing",c:"var(--teal)",t:[
+      ["Yeh Jeevan Hai","Kishore Kumar · Piya Ka Ghar (1972)"],
+      ["Kuch To Log Kahenge","Kishore Kumar · Amar Prem (1972)"],
+      ["Zindagi Kaisi Hai Paheli","Manna Dey · Anand (1971)"]]}]},
+  burn:{label:"Burnout / career mess",soon:1},
+  miss:{label:"Missing someone",soon:1}
+};
+const QUIPS=[
+ "Just a little leak. Barely counts.","Mild sniffle. Happens to the best of us.","Eyes are a bit glassy, honestly.","Okay, getting real now.",
+ "Medium cry. Order the second round.","Properly sad. Sit, we've got you.","Pass the tissues, we're past polite.","Ugly-cry territory.",
+ "Mascara is a lost cause.","Bring out everything. The bartender is not looking."];
+const TIPS=["be kind to yourself","drink some water","text a friend tomorrow","sleep, then see","you're allowed to be a mess"];
+let mood="heart";
+
+const chips=document.getElementById('chips');
+Object.entries(MOODS).forEach(([k,m])=>{
+  const b=document.createElement('button');
+  b.className='chip'+(m.soon?' soon':'');b.textContent=m.label;
+  b.setAttribute('aria-pressed',k===mood);
+  b.onclick=()=>{ if(m.soon){return} mood=k;[...chips.children].forEach(c=>c.setAttribute('aria-pressed','false'));b.setAttribute('aria-pressed','true')};
+  chips.appendChild(b);
+});
+
+const dial=document.getElementById('dial'),dn=document.getElementById('dn'),dq=document.getElementById('dq'),liq=document.getElementById('liq');
+function setDial(){
+  const v=+dial.value;dn.textContent=v;dq.textContent=QUIPS[v-1];
+  liq.setAttribute('y',112-v*10);
+}
+dial.oninput=setDial;setDial();
+
+document.getElementById('go').onclick=()=>{
+  if(SP.player&&SP.ready)SP.player.activateElement();
+  const v=+dial.value,m=MOODS[mood];
+  // dial controls how deep the "ugly cry" act goes
+  const acts=m.acts.map((a,i)=>i===2?{...a,t:a.t.slice(0,Math.max(1,Math.ceil(v/10*a.t.length)))}:a);
+  let n=0;
+  document.getElementById('acts').innerHTML=acts.map(a=>`
+    <div class="act" style="--c:${a.c}">
+      <h4>${a.n}<span>${a.sub}</span></h4>
+      ${a.t.map(([t,ar])=>`<div class="trk" data-i="${n}"><span class="no">${String(++n).padStart(2,'0')}</span><span class="t">${t}</span><span class="a">${ar}</span></div>`).join('')}
+    </div>`).join('');
+  document.getElementById('rt').textContent=m.title;
+  document.getElementById('rs').textContent=`${m.label} · glass ${v}/10 · ${new Date().toLocaleDateString('en-IN',{day:'numeric',month:'short'})}`;
+  document.getElementById('tot').textContent=`${n} songs · ~${n*4} min · ${Math.ceil(v/3)} tissues`;
+  document.getElementById('tip').textContent=`tip: ${TIPS[v%TIPS.length]}`;
+  const tab=document.getElementById('tab');tab.classList.add('show');
+  document.getElementById('bar').style.width='0';
+  setTimeout(()=>document.getElementById('bar').style.width=(v*10)+'%',60);
+  tab.scrollIntoView({behavior:'smooth'});
+  startPlayer(acts);
+};
+
+/* ---------- player: plays song after song until they cry ---------- */
+const aud=new Audio();
+let Q=[],cur=-1,done=false;
+const $=id=>document.getElementById(id);
+const previewCache={};
+async function findPreview(t,ar){
+  const film=(ar.split(' · ')[1]||'').replace(/\s*\(\d{4}\)/,'');
+  const key=t+'|'+film;
+  if(key in previewCache)return previewCache[key];
+  let url=null;
+  try{
+    const r=await fetch('https://itunes.apple.com/search?'+new URLSearchParams({term:t+' '+film,entity:'song',country:'IN',limit:'10'}));
+    const j=await r.json();
+    const first=t.toLowerCase().split(' ')[0];
+    const hit=j.results.find(x=>x.previewUrl&&x.trackName.toLowerCase().includes(first));
+    url=hit?hit.previewUrl:null;
+  }catch(e){}
+  return previewCache[key]=url;
+}
+function mark(i){
+  document.querySelectorAll('.trk').forEach(r=>r.classList.toggle('now',+r.dataset.i===i));
+  const now=document.querySelector('.trk.now');if(now)now.scrollIntoView({block:'nearest',behavior:'smooth'});
+  $('bar').style.width=Math.round((i+1)/Q.length*100)+'%';
+}
+async function play(i){
+  if(done)return;
+  if(i>=Q.length){finish(false);return}
+  cur=i;const s=Q[i];
+  mark(i);
+  $('npT').textContent=s.t;$('npA').textContent=s.ar;$('npS').textContent='finding the record…';
+  document.querySelector('.vinyl').classList.remove('off');
+  const url=await findPreview(s.t,s.ar);
+  if(cur!==i||done)return;
+  if(!url){$('npS').textContent='not on the jukebox, skipping…';setTimeout(()=>{if(cur===i)play(i+1)},900);return}
+  aud.src=url;
+  try{await aud.play();$('npS').textContent=`song ${i+1} of ${Q.length} · 30-sec preview`;$('bPause').textContent='Pause'}
+  catch(e){$('npS').textContent='tap Play to start';$('bPause').textContent='Play'}
+}
+function finish(cried){
+  done=true;aud.pause();
+  if(SP.mode&&SP.player)SP.player.pause();
+  document.querySelector('.vinyl').classList.add('off');
+  $('np').style.display='none';$('npEnd').style.display='block';
+  document.querySelectorAll('.trk').forEach(r=>r.classList.remove('now'));
+  if(cried){
+    const s=Q[cur];
+    $('endK').textContent='tab closed';
+    $('endT').textContent=`They cried at song ${cur+1}.`;
+    $('endA').textContent=`${s.t} did it. Hand them a tissue, don't say anything.`;
+    $('bar').style.width='100%';
+  }else{
+    $('endK').textContent='last call';
+    $('endT').textContent='Whole tab played. Still dry-eyed.';
+    $('endA').textContent='Cold-hearted. Or just an old soul. Pour another round.';
+  }
+}
+function startPlayer(acts){
+  aud.pause();done=false;cur=-1;
+  if(SP.mode&&SP.player)SP.player.pause();
+  SP.mode=false;
+  Q=acts.flatMap(a=>a.t.map(([t,ar])=>({t,ar})));
+  $('np').style.display='block';$('npEnd').style.display='none';
+  if(SP.ready){startSpotify();return}
+  play(0);
+}
+aud.onended=()=>play(cur+1);
+aud.onerror=()=>{if(!done)play(cur+1)};
+$('bCry').onclick=()=>finish(true);
+$('bNext').onclick=()=>{
+  if(SP.mode){
+    if(cur>=Q.map(s=>!!s.uri).lastIndexOf(true))finish(false);else SP.player.nextTrack();
+    return;
+  }
+  aud.pause();play(cur+1);
+};
+$('bPause').onclick=()=>{
+  if(SP.mode){SP.player.togglePlay();return}
+  if(aud.paused){aud.play();$('bPause').textContent='Pause';document.querySelector('.vinyl').classList.remove('off')}
+  else{aud.pause();$('bPause').textContent='Play';document.querySelector('.vinyl').classList.add('off')}
+};
+$('bAgain').onclick=()=>{aud.pause();if(SP.mode&&SP.player)SP.player.pause();done=true;$('tab').classList.remove('show');document.getElementById('order').scrollIntoView({behavior:'smooth'})};
+
+/* ---------- Spotify Premium: full songs via Web Playback SDK (PKCE login, no backend) ---------- */
+const SP={cid:'b2201b42497a4cac997a8a1b640256e5',ready:false,mode:false,player:null,device:null,sawLast:false};
+const SP_SCOPES='streaming user-read-email user-read-private user-modify-playback-state user-read-playback-state';
+const spRedirect=()=>location.origin+location.pathname;
+const spStatus=m=>{$('spS').textContent=m};
+const b64=b=>btoa(String.fromCharCode(...new Uint8Array(b))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+const lsGet=k=>{try{return localStorage.getItem(k)}catch(e){return null}};
+const lsSet=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
+const lsDel=k=>{try{localStorage.removeItem(k)}catch(e){}};
+
+async function spLogin(){
+  if(location.protocol==='file:'||location.hostname==='localhost'){
+    spStatus('Spotify login needs the hosted site, or http://127.0.0.1:5173/ when testing locally.');return;
+  }
+  const v=b64(crypto.getRandomValues(new Uint8Array(48)));
+  lsSet('sp_v',v);
+  const ch=b64(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(v)));
+  location.href='https://accounts.spotify.com/authorize?'+new URLSearchParams({
+    client_id:SP.cid,response_type:'code',redirect_uri:spRedirect(),scope:SP_SCOPES,
+    code_challenge_method:'S256',code_challenge:ch});
+}
+async function spToken(body){
+  const r=await fetch('https://accounts.spotify.com/api/token',{method:'POST',
+    headers:{'Content-Type':'application/x-www-form-urlencoded'},
+    body:new URLSearchParams({client_id:SP.cid,...body})});
+  const j=await r.json();
+  if(!j.access_token)throw new Error(j.error_description||j.error||'token');
+  lsSet('sp_at',j.access_token);lsSet('sp_exp',String(Date.now()+j.expires_in*1000-60000));
+  if(j.refresh_token)lsSet('sp_rt',j.refresh_token);
+  return j.access_token;
+}
+async function spGetToken(){
+  if(+lsGet('sp_exp')>Date.now()&&lsGet('sp_at'))return lsGet('sp_at');
+  const rt=lsGet('sp_rt');if(!rt)throw new Error('no session');
+  return spToken({grant_type:'refresh_token',refresh_token:rt});
+}
+async function spInit(){
+  const q=new URLSearchParams(location.search);
+  try{
+    if(q.get('code')){
+      await spToken({grant_type:'authorization_code',code:q.get('code'),redirect_uri:spRedirect(),code_verifier:lsGet('sp_v')});
+      history.replaceState({},'',spRedirect());
+    }else if(q.get('error')){
+      history.replaceState({},'',spRedirect());spStatus('Spotify login was cancelled.');return;
+    }
+    if(!lsGet('sp_rt'))return;
+    await spGetToken();
+  }catch(e){spStatus('Spotify login failed. Try Connect again.');lsDel('sp_rt');return}
+  spStatus('Connecting to Spotify…');
+  window.onSpotifyWebPlaybackSDKReady=spSetup;
+  const s=document.createElement('script');s.src='https://sdk.scdn.co/spotify-player.js';document.head.appendChild(s);
+}
+function spSetup(){
+  const p=new Spotify.Player({name:"Bob's Bar · Cry Jukebox",volume:.8,
+    getOAuthToken:cb=>spGetToken().then(cb).catch(()=>spStatus('Spotify session expired. Connect again.'))});
+  p.addListener('ready',({device_id})=>{SP.device=device_id;SP.ready=true;$('sp').textContent='Spotify connected';spStatus('Spotify connected: full songs.')});
+  p.addListener('not_ready',()=>{SP.ready=false;spStatus('Spotify went offline.')});
+  p.addListener('authentication_error',()=>{SP.ready=false;lsDel('sp_rt');spStatus('Spotify login expired. Connect again.')});
+  p.addListener('account_error',()=>{SP.ready=false;spStatus('Full songs need Spotify Premium on this account.')});
+  p.addListener('initialization_error',({message})=>spStatus(message));
+  p.addListener('player_state_changed',spState);
+  SP.player=p;p.connect();
+}
+async function spFind(t,ar){
+  const film=(ar.split(' · ')[1]||'').replace(/\s*\(\d{4}\)/,'');
+  const r=await fetch('https://api.spotify.com/v1/search?'+new URLSearchParams({q:t+' '+film,type:'track',market:'IN',limit:'10'}),
+    {headers:{Authorization:'Bearer '+await spGetToken()}});
+  if(!r.ok)return null;
+  const j=await r.json();
+  const first=t.toLowerCase().split(' ')[0],f=film.toLowerCase().split(' ')[0];
+  const hits=j.tracks.items.filter(x=>x.name.toLowerCase().includes(first));
+  return hits.find(x=>f&&x.album.name.toLowerCase().includes(f))||hits[0]||null;
+}
+async function startSpotify(){
+  SP.mode=true;SP.sawLast=false;
+  const flat=Q;
+  $('npT').textContent='Setting up the jukebox…';$('npA').textContent='';$('npS').textContent='finding your songs on Spotify…';
+  const found=await Promise.all(flat.map(async s=>{try{return await spFind(s.t,s.ar)}catch(e){return null}}));
+  if(done)return;
+  Q=flat.map((s,i)=>({...s,uri:found[i]?found[i].uri:null}));
+  const uris=Q.filter(s=>s.uri).map(s=>s.uri);
+  const fallback=()=>{SP.mode=false;Q=flat;play(0)};
+  if(!uris.length){fallback();return}
+  try{
+    const r=await fetch('https://api.spotify.com/v1/me/player/play?device_id='+SP.device,{method:'PUT',
+      headers:{Authorization:'Bearer '+await spGetToken(),'Content-Type':'application/json'},body:JSON.stringify({uris})});
+    if(!r.ok)fallback();
+  }catch(e){fallback()}
+}
+function spState(st){
+  if(!st||done||!SP.mode)return;
+  const ct=st.track_window.current_track;
+  const i=Q.findIndex(s=>s.uri&&(s.uri===ct.uri||(ct.linked_from&&s.uri===ct.linked_from.uri)));
+  const lastI=Q.map(s=>!!s.uri).lastIndexOf(true);
+  if(i>=0&&i!==cur){cur=i;mark(i);$('npT').textContent=Q[i].t;$('npA').textContent=Q[i].ar;$('npS').textContent=`song ${i+1} of ${Q.length} · full track on Spotify`}
+  if(i===lastI&&st.position>0)SP.sawLast=true;
+  $('bPause').textContent=st.paused?'Play':'Pause';
+  document.querySelector('.vinyl').classList.toggle('off',st.paused);
+  if(st.paused&&st.position===0&&SP.sawLast)finish(false);
+}
+$('sp').onclick=()=>{if(!SP.ready)spLogin()};
+spInit();
+</script>
+</body>
+</html>
